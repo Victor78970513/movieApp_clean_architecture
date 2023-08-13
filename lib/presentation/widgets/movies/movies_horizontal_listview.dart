@@ -3,7 +3,7 @@ import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:flutter/material.dart';
 
-class MovieHorizontalListview extends StatelessWidget {
+class MovieHorizontalListview extends StatefulWidget {
   final List<Movie> movies;
   final String? title;
   final String? subTitle;
@@ -17,19 +17,47 @@ class MovieHorizontalListview extends StatelessWidget {
   });
 
   @override
+  State<MovieHorizontalListview> createState() =>
+      _MovieHorizontalListviewState();
+}
+
+class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
+  final scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (widget.loadNextPage == null) return;
+      if (scrollController.position.pixels + 200 >=
+          scrollController.position.maxScrollExtent) {
+        widget.loadNextPage!();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 350,
+      height: 370,
       child: Column(
         children: [
-          if (title != null || subTitle != null)
-            _Title(title: title, subTitle: subTitle),
+          if (widget.title != null || widget.subTitle != null)
+            _Title(title: widget.title, subTitle: widget.subTitle),
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
-              itemCount: movies.length,
-              itemBuilder: (context, index) => _Slide(movie: movies[index]),
+              itemCount: widget.movies.length,
+              itemBuilder: (context, index) =>
+                  FadeInRight(child: _Slide(movie: widget.movies[index])),
             ),
           )
         ],
@@ -72,7 +100,7 @@ class _Slide extends StatelessWidget {
                           child: CircularProgressIndicator(strokeWidth: 2)),
                     );
                   }
-                  return FadeInRight(child: child);
+                  return FadeIn(child: child);
                 },
               ),
             ),
@@ -123,7 +151,7 @@ class _Title extends StatelessWidget {
     final titleStyle = Theme.of(context).textTheme.titleLarge;
     return Container(
       padding: const EdgeInsets.only(top: 10),
-      margin: const EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Row(
         children: [
           if (title != null) Text(title!, style: titleStyle),
