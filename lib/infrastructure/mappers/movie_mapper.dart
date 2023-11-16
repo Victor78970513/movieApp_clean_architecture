@@ -16,8 +16,10 @@ class MovieMapper {
         popularity: moviedb.popularity,
         posterPath: (moviedb.posterPath != '')
             ? 'https://image.tmdb.org/t/p/w500${moviedb.posterPath}'
-            : 'no-poster',
-        releaseDate: moviedb.releaseDate,
+            : "https://cdn4.vectorstock.com/i/1000x1000/30/98/404-web-page-with-error-message-glitch-style-vector-27943098.jpg",
+        // : 'https://sd.keepcalms.com/i-w600/keep-calm-poster-not-found.jpg',
+        releaseDate:
+            moviedb.releaseDate != null ? moviedb.releaseDate! : DateTime.now(),
         title: moviedb.title,
         voteAverage: moviedb.voteAverage,
         voteCount: moviedb.voteCount,
